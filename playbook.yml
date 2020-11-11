@@ -1,0 +1,43 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Add Apt-Keys
+      apt_key:
+        url: '{{item}}'
+        state: present
+      with_items:
+        - "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+        - "https://packages.microsoft.com/keys/microsoft.asc"
+    - name: Add Repos
+      apt_repository:
+        repo: '{{item.name}}'
+        filename: '{{item.filename}}'
+        state: present
+      with_items:
+        - { name: 'deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main', filename: 'vscode' }
+        - { name: 'deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable', filename: 'docker'}
+    - name: Install base packages
+      package:
+        name: '{{item}}'
+        state: present
+      with_items:
+        - apt-transport-https
+        - software-properties-common
+        - build-essential
+        - ca-certificates
+        - curl
+        - exfat-fuse
+        - exfat-utils
+        - python3-pip
+        - virtualenv
+    - name: Install packages
+      package:
+        name: '{{item}}'
+        state: present
+      with_items:
+        - git
+        - code
+        - docker-ce
+        - htop
+        - tree
