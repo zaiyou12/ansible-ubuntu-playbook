@@ -9,6 +9,8 @@
       with_items:
         - "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
         - "https://packages.microsoft.com/keys/microsoft.asc"
+        - "https://dl.yarnpkg.com/debian/pubkey.gpg"
+        - "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
     - name: Add Repos
       apt_repository:
         repo: '{{item.name}}'
@@ -17,6 +19,9 @@
       with_items:
         - { name: 'deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main', filename: 'vscode' }
         - { name: 'deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable', filename: 'docker'}
+        - { name: 'deb https://dl.yarnpkg.com/debian/ stable main', filename: 'yarn'}
+        - { name: "deb https://deb.nodesource.com/node_14.x {{ ansible_distribution_release }} main", filename: 'node_repo'}
+        - { name: "deb-src https://deb.nodesource.com/node_14.x {{ ansible_distribution_release }} main", filename: 'node_repo'}
     - name: Install base packages
       package:
         name: '{{item}}'
@@ -31,6 +36,7 @@
         - exfat-utils
         - python3-pip
         - virtualenv
+        - gnupg2
     - name: Install packages
       package:
         name: '{{item}}'
@@ -41,3 +47,10 @@
         - docker-ce
         - htop
         - tree
+        - tmux
+        - yarn
+        - nodejs
+    - name: Install @vue/cli
+      yarn:
+        name: "@vue/cli"
+        global: true
